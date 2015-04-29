@@ -12,7 +12,7 @@ Installation :
     boot2docker init
     boot2docker up
     # export boot2docker path
-    docker pull kota999/jupyter
+    docker build "your docker tag name" .
 
 Run by :
 

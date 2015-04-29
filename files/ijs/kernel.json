@@ -1,0 +1,7 @@
+{
+ "language": "javascript",
+ "display_name": "javascript",
+ "argv": [
+  "/root/node_modules/.bin/ijs",
+  "{connection_file}"]
+}

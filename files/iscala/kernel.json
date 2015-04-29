@@ -1,0 +1,10 @@
+{
+ "language": "scala",
+ "display_name": "Scala 2.10.2",
+ "argv": [
+  "/usr/sbin/java",
+  "-jar",
+  "/root/IScala-0.1/lib/IScala.jar",
+  "{connection_file}"
+ ]
+}
