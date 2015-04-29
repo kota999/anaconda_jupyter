@@ -12,11 +12,11 @@ Installation :
     boot2docker init
     boot2docker up
     # export boot2docker path
-    docker build "your docker tag name" .
+    docker build "your docker image name" .
 
 Run by :
 
-    docker run -d -p $JUPYTER_PORT:8888 kota999/jupyter notebook
+    docker run -d -p $JUPYTER_PORT:8888 "your docker image name" notebook
 
 Go to:
 
