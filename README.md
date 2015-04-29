@@ -3,7 +3,7 @@
 This repository is jupyter server for my personal use.
 
 This one contain feature is many programing language kernel , IPython3 (python2.7.9), IJulia, IRkernel, IGo, IScala, Bash, Redis kernel, IJavascript.
-Containts of python module are numpy, scipy, matplotlib, PIL, scikits.learn, scikit-image, pandas, Cython, numba, cvxopt, sympy.
+Distribution of python is anaconda-2.1.0, this distribution is the latest version of using python2.
 
 ###Description
 Installation :
