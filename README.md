@@ -16,7 +16,9 @@ Installation :
 
 Run by :
 
-    docker run -d -p $JUPYTER_PORT:8888 "your docker image name" notebook
+    docker run -d -p $JUPYTER_PORT:8888 "your docker image name"
+    # if you want to mount work-directory on host machine, add below option
+    # -v <work-directory on host machine>:<mount point on docker image>
 
 Go to:
 

@@ -1,0 +1,11 @@
+{
+  "display_name": "Julia 0.3.6",
+  "argv": [
+    "/usr/sbin/julia",
+    "-i",
+    "-F",
+    "/root/.julia/v0.3/IJulia/src/kernel.jl",
+    "{connection_file}"
+  ],
+  "language": "julia"
+}

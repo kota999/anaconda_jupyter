@@ -23,10 +23,8 @@ RUN curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/py
 # export PYENV PATH
 ENV PATH ${HOME}/.pyenv/bin:${HOME}/.pyenv/shims:$PATH
 RUN echo "export PATH=\$PATH:\$HOME/.pyenv/bin:\$HOME/.pyenv/shims" >> ${HOME}/.bashrc
-# set eval
-RUN echo "eval \"\$(pyenv init -)\"" >> ${HOME}/.bashrc && echo "eval \"\$(pyenv virtualenv-init -)\"" >> ${HOME}/.bashrc
-# source bashrc
-RUN source ${HOME}/.bashrc
+# set eval and source bash
+RUN echo "eval \"\$(pyenv init -)\"" >> ${HOME}/.bashrc && echo "eval \"\$(pyenv virtualenv-init -)\"" >> ${HOME}/.bashrc && source ${HOME}/.bashrc
 
 #
 # install anaconda 2.1.0
@@ -58,11 +56,10 @@ RUN mkdir /notebooks
 #
 # install julia
 RUN echo Y | pacman -S julia
-# install IJulia
+# install IJulia and prepare kernel.json for julia
 ADD files/ijulia/installIJulia.jl ${HOME}/installIJulia.jl
 RUN cd ${HOME} && julia installIJulia.jl && rm installIJulia.jl
-# prepare kernel.json for julia
-RUN sed -i -e "s|\/usr\/bin\/julia|\/usr\/sbin\/julia|" ${HOME}/.ipython/kernels/julia\ 0.3/kernel.json
+ADD files/ijulia/julia-0.3/ ${HOME}/.ipython/kernels/julia-0.3/
 
 #
 # install IRkernel
@@ -75,7 +72,10 @@ RUN git clone git://github.com/IRkernel/repr && R CMD INSTALL repr && rm -rf rep
 RUN wget http://cran.rstudio.com/src/contrib/base64enc_0.1-2.tar.gz && R CMD INSTALL base64enc_0.1-2.tar.gz && rm -f base64enc_0.1-2.tar.gz
 RUN git clone git://github.com/IRkernel/IRdisplay && R CMD INSTALL IRdisplay && rm -rf IRdisplay
 # install IRkernel
-RUN wget http://cran.rstudio.com/src/contrib/stringr_0.6.2.tar.gz && R CMD INSTALL stringr_0.6.2.tar.gz && rm -f stringr_0.6.2.tar.gz
+#
+RUN wget http://cran.r-project.org/src/contrib/stringi_0.4-1.tar.gz && R CMD INSTALL stringi_0.4-1.tar.gz && rm -f stringi_0.4-1.tar.gz
+RUN wget http://cran.r-project.org/src/contrib/magrittr_1.5.tar.gz && R CMD INSTALL magrittr_1.5.tar.gz && rm -f magrittr_1.5.tar.gz
+RUN wget http://cran.r-project.org/src/contrib/stringr_1.0.0.tar.gz && R CMD INSTALL stringr_1.0.0.tar.gz && rm -f stringr_1.0.0.tar.gz
 RUN wget http://cran.rstudio.com/src/contrib/evaluate_0.7.tar.gz && R CMD INSTALL evaluate_0.7.tar.gz && rm -f evaluate_0.7.tar.gz
 RUN wget http://cran.r-project.org/src/contrib/rzmq_0.7.7.tar.gz && R CMD INSTALL rzmq_0.7.7.tar.gz && rm -f rzmq_0.7.7.tar.gz
 RUN wget http://cran.r-project.org/src/contrib/jsonlite_0.9.16.tar.gz && R CMD INSTALL jsonlite_0.9.16.tar.gz && rm -f jsonlite_0.9.16.tar.gz
@@ -83,10 +83,7 @@ RUN wget http://cran.r-project.org/src/contrib/uuid_0.1-1.tar.gz && R CMD INSTAL
 RUN wget http://cran.r-project.org/src/contrib/digest_0.6.8.tar.gz && R CMD INSTALL digest_0.6.8.tar.gz && rm -f digest_0.6.8.tar.gz
 RUN git clone git://github.com/IRkernel/IRkernel && R CMD INSTALL IRkernel && rm -rf IRkernel
 # prepare kernel.json for IRkernel
-RUN echo "IRkernel::installspec()" > install.R
-RUN R --vanilla < install.R
-RUN rm install.R
-RUN sed -i -e "1s|R|\/usr\/sbin\/R|" ${HOME}/.ipython/kernels/ir/kernel.json
+RUN echo "IRkernel::installspec()" > install.R && R --vanilla < install.R && rm install.R && sed -i -e "1s|R|\/usr\/sbin\/R|" ${HOME}/.ipython/kernels/ir/kernel.json
 
 #
 # install igo
@@ -96,8 +93,7 @@ RUN echo Y | pacman -S go
 # mkdir GOPATH
 RUN mkdir ${HOME}/go
 # export GOPATH PATH
-RUN echo "export PATH=\$PATH:\$HOME/go/bin" >> ${HOME}/.bashrc
-RUN echo "export GOPATH=\$HOME/go" >> ${HOME}/.bashrc
+RUN echo "export PATH=\$PATH:\$HOME/go/bin" >> ${HOME}/.bashrc && echo "export GOPATH=\$HOME/go" >> ${HOME}/.bashrc
 ENV PATH ${HOME}/go/bin:$PATH
 ENV GOPATH ${HOME}/go
 # install igo
@@ -105,9 +101,7 @@ RUN echo Y | pacman -S pkg-config
 RUN go get -tags zmq_4_x github.com/alecthomas/gozmq
 RUN go get github.com/takluyver/igo
 # prepare kernel.json for IRkernel
-RUN mkdir -p ${HOME}/.ipython/kernels/igo
-RUN cp ${HOME}/go/src/github.com/takluyver/igo/kernel/* ${HOME}/.ipython/kernels/igo/
-RUN sed -i -e "s|\$GOPATH|\/root\/go|" ${HOME}/.ipython/kernels/igo/kernel.json
+RUN mkdir -p ${HOME}/.ipython/kernels/igo && cp ${HOME}/go/src/github.com/takluyver/igo/kernel/* ${HOME}/.ipython/kernels/igo/ && sed -i -e "s|\$GOPATH|\/root\/go|" ${HOME}/.ipython/kernels/igo/kernel.json
 
 #
 # install IScala
@@ -143,3 +137,8 @@ RUN npm install ijavascript && mv /node_modules ${HOME}/node_modules
 # prepare kernel.json for ijavascript
 RUN mkdir -p ${HOME}/.ipython/kernels/ijs
 ADD files/ijs/kernel.json ${HOME}/.ipython/kernels/ijs/kernel.json
+
+# clean trash
+RUN rm -rf /var/cache/pacman/pkg/* /var/lib/pacman/local/* /var/lib/pacman/sync/* ${HOME}/.cache/pip/*
+
+CMD ["/usr/local/sbin/notebook"]
